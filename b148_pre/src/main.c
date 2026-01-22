@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "filter.h"
+#include <string.h>
+#include "../include/filter.h"
 
 void read_pgm(const char* filename, unsigned char** data, int* width, int* height) {
     FILE* fp = fopen(filename, "rb");
@@ -32,20 +33,34 @@ void write_pgm(const char* filename, unsigned char* data, int width, int height)
 }
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s input.pgm output.pgm\n", argv[0]);
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s <mode> input.pgm output.pgm\n", argv[0]);
+        fprintf(stderr, "Modes: edge, invert, threshold\n");
         return 1;
     }
 
+    char* mode = argv[1];
     unsigned char *input, *output;
     int width, height;
 
-    read_pgm(argv[1], &input, &width, &height);
+    read_pgm(argv[2], &input, &width, &height);
     output = malloc(width * height);
 
-    apply_edge_filter(input, output, width, height);
+    if (strcmp(mode, "edge") == 0) {
+        apply_edge_filter(input, output, width, height);
+    } else if (strcmp(mode, "invert") == 0) {
+        apply_invert_filter(input, output, width, height);
+    } else if (strcmp(mode, "threshold") == 0) {
+        apply_threshold_filter(input, output, width, height);
+    } else {
+        fprintf(stderr, "Error: Unknown filter mode '%s'\n", mode);
+        fprintf(stderr, "Modes: edge, invert, threshold\n");
+        free(input);
+        free(output);
+        return 1;
+    }
 
-    write_pgm(argv[2], output, width, height);
+    write_pgm(argv[3], output, width, height);
 
     free(input);
     free(output);

@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "filter.h"
+#include "../include/filter.h"
 
 void apply_edge_filter(unsigned char* input, unsigned char* output, int width, int height) {
     for (int y = 1; y < height - 1; y++) {
@@ -9,5 +9,17 @@ void apply_edge_filter(unsigned char* input, unsigned char* output, int width, i
                      + input[(y - 1) * width + (x + 1)] + 2 * input[y * width + (x + 1)] + input[(y + 1) * width + (x + 1)];
             output[idx] = gx > 255 ? 255 : (gx < 0 ? 0 : gx);
         }
+    }
+}
+
+void apply_invert_filter(unsigned char* input, unsigned char* output, int width, int height) {
+    for (int i = 0; i < width * height; i++) {
+        output[i] = 255 - input[i];
+    }
+}
+
+void apply_threshold_filter(unsigned char* input, unsigned char* output, int width, int height) {
+    for (int i = 0; i < width * height; i++) {
+        output[i] = (input[i] < 128) ? 0 : 255;
     }
 }
